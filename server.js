@@ -41,7 +41,7 @@ mysql.createConnection({
 	}, 10000);
 	
 	app.get('/', (req, res, next)=>{
-		res.json({msg: 'Welcome to your CRM api bro!', status: 200})
+		res.json({msg: 'Welcome to Food Hero api bro!', status: 200})
 	})
 
     //APPEL de nos routes

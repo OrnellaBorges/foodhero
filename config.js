@@ -1,12 +1,12 @@
 module.exports = {
 	db: {
 		host: "localhost",
-		database: "",
-		user: "",
+		database: "saas",
+		user: "root",
 		password: "root",
 		port: 8889
 	},
 	token: {
-		secret: process.env.SECRET
+		secret: "pitichat"
 	}
 }

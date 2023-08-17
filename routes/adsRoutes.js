@@ -5,7 +5,7 @@
 
 
 
-
+/* 
 
 //route de récupération de toutes les annonces
 app.get("/api/v1/ads", async (req, res, next) => {
@@ -114,3 +114,4 @@ app.delete("/api/v1/ads/delete/:id", async (req, res, next)=>{
 })
 
 
+*/

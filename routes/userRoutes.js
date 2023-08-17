@@ -8,7 +8,7 @@ if(!process.env.HOST_DB) {
     config = require('../config-exemple')
 }
 let secret = process.env.TOKEN_SECRET || config.token.secret;
-const mail = require('../lib/mailing');
+//const mail = require('../lib/mailing');
 
 const withAuth = require('../withAuth');
 

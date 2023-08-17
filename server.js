@@ -14,12 +14,12 @@ if(!process.env.HOST_DB) {
 	var config = require('./config')
 }
 
-const mysql = require('promise-mysql');
+const mysql2 = require('mysql2');
 
 //ici on appelera nos routes
 const userRoutes = require('./routes/userRoutes')
-const adRoutes = require('./routes/adRoutes')
-const adminRoutes = require('./routes/adminRoutes')
+//const adRoutes = require('./routes/adRoutes')
+//const adminRoutes = require('./routes/adminRoutes')
 const authRoutes = require('./routes/authRoutes')
 
 const host = process.env.HOST_DB || config.db.host;
@@ -28,7 +28,7 @@ const user = process.env.USER_DB || config.db.user;
 const password = process.env.PASSWORD_DB || config.db.password;
 const port = process.env.PORT || config.db.port;
 
-mysql.createConnection({
+mysql2.createConnection({
 	host: host,
 	database: database,
 	user: user,
@@ -46,8 +46,8 @@ mysql.createConnection({
 
     //APPEL de nos routes
     userRoutes(app, db)
-    adminRoutes(app, db)
-    adRoutes(app, db)
+    //adminRoutes(app, db)
+    //adRoutes(app, db)
     authRoutes(app, db)
 })
 .catch(err=>console.log(err))

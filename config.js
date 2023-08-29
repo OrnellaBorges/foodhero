@@ -1,7 +1,7 @@
 module.exports = {
 	db: {
 		host: "localhost",
-		database: "saas",
+		database: "foodhero",
 		user: "root",
 		password: "root",
 		port: 8889

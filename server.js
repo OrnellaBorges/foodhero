@@ -7,28 +7,23 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 const cors = require('cors');
 app.use(cors());
+const config = require('./config')
+const mysql = require('promise-mysql');
 
-if(!process.env.HOST_DB) {
-	var config = require('./config-exemple')
-} else {
-	var config = require('./config')
-}
-
-const mysql2 = require('mysql2');
-
-//ici on appelera nos routes
+//CREATION _ IMPORTATION  DES ROUTES QU ON STOCVK DANS DES CONSTANTES 
 const userRoutes = require('./routes/userRoutes')
-//const adRoutes = require('./routes/adRoutes')
-//const adminRoutes = require('./routes/adminRoutes')
-const authRoutes = require('./routes/authRoutes')
+const adRoutes = require('./routes/adRoutes')
 
+
+// SYOCKAGE DES INFO CHEMINS DE CONFIG DE BDD DANS CONTANTES
 const host = process.env.HOST_DB || config.db.host;
 const database = process.env.DATABASE_DB || config.db.database;
 const user = process.env.USER_DB || config.db.user;
 const password = process.env.PASSWORD_DB || config.db.password;
 const port = process.env.PORT || config.db.port;
 
-mysql2.createConnection({
+//CONNEXION A MA BDD 
+mysql.createConnection({
 	host: host,
 	database: database,
 	user: user,
@@ -36,9 +31,6 @@ mysql2.createConnection({
 	port: port
 }).then((db) => {
     console.log('connecté bdd');
-	setInterval(async function () {
-		let res = await db.query('SELECT 1');
-	}, 10000);
 	
 	app.get('/', (req, res, next)=>{
 		res.json({msg: 'Welcome to Food Hero api bro!', status: 200})
@@ -46,14 +38,16 @@ mysql2.createConnection({
 
     //APPEL de nos routes
     userRoutes(app, db)
-    //adminRoutes(app, db)
-    //adRoutes(app, db)
-    authRoutes(app, db)
+    adRoutes(app, db)
 })
-.catch(err=>console.log(err))
+// en cas d'erreur 
+.catch(err=>console.log(err)) 
 
-const PORT = process.env.PORT || 9500;
 
+// on stock le chemin du port dans une constantes 
+const PORT = process.env.PORT || 9600;
+
+// ici 
 app.listen(PORT, ()=>{
 	console.log('listening port: '+PORT+' bro!');
 })

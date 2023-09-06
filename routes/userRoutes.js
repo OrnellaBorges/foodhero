@@ -12,33 +12,66 @@ module.exports = (app, db) => {
   //CREATE = creation d'un compte utilisateur
   //Route de creation d'un utilisateur
   app.post("/api/v1/user/create", async (req, res, next) => {
+    const { email } = req.body;
     // 1- on verifie si l'utilisateur existe déjà ou pas si il existe on le refoule.
     // on stock dans une constante let check le resultat de la fonction getOneUserByEmail qui recup un utilisateur par son email
-    const check = await userModel.getOneUserByEmail(req.body.email);
+    const check = await userModel.getOneUserByEmail(email); // ici on stock dans la constante toute les données reçu de la fonction getOneUserByEmail qui fait une requete a la bdd dans le userModel
     console.log("check", check);
-    //ici on fait if / else une condition si
+    //ici on fait if / else une condition si ???
+    if (check.code) {
+      // check doit retourner un tableau vide pour signifier que la place est libre pour cette utilisateur personne n'utilise le meme email
 
-    // ENREGISTREMENT NOUVEL UTILISATEUR SI IL EXISTE PAS
+      res.json({ status: 500, msg: "Erreur vérification email", err: check });
+    } else {
+      // si check voit qu'il y a qq1 avec le meme mail il retourne un tableau qui n'est pas vide et en front le res.json
+
+      if (check.length > 0) {
+        // si le tableau est supérieur a 0
+        if (check[0].email === email) {
+          // et que check.email correspondent alors on envoit le msg au front "Email déjà utilisé."
+          res.json({ status: 401, msg: "Email déjà utilisé." });
+        }
+      } else {
+        // dans le cas ou c'est === à 0 c'est que la place est libre
+        // on stock dans let user la reponse de la fonction de sauvegarde d'un utilisateur saveOneUser(req) on lui passe la req du front en argument
+        let user = await userModel.saveOneUser(req);
+        if (user.code) {
+          // ????
+          res.json({ status: 500, msg: "Il y a eu un problème", err: user });
+        } else {
+          // QUAND TOUT EST OK
+          res.json({ status: 200, msg: "Votre compte à bien été crée!" });
+        }
+      }
+    }
+  });
+
+  /* // ENREGISTREMENT NOUVEL UTILISATEUR SI IL EXISTE PAS
     // ici on stock dans la constante une le resultat de la requete sql qui se trouve dans le model saveUser
     const result = await userModel.saveOneUser(req);
     console.log("result saveOneUser", result);
 
     // reponse pour le front qu'on convertit en json le result
     res.json(result);
-  });
+  }); */
 
   //UPDATE = modifier un compte
   app.put("/api/v1/user/updateAccount", async (req, res, next) => {});
 
   //LOGGIN = connexion de l'utilisateur à son compte
-  app.post("/api/v1/user/logginAccount", async (req, res, next) => {
+
+  // CREATION DU TOKEN DANS cette route
+  app.post("/api/v1/user/loggin", async (req, res, next) => {
     //version ES6
     // ici on fait une DESTRUCTURATION en ES6 qui permet d'eviter d'ecrire req.body.email
-    const { email } = req.body;
+    const { email } = req.body; // on a besoin de l'email rentré par l'utilisateur
     //version ES5 on faisait comme ça
     //const email = req.body.email
 
+    // VERIFICATIONS :
+
     if (email === "") {
+      // SI UTILISATEUR NA RIEN MIS DANS L4INPUT
       //LE RES ON LE CONSTRUIT COMME ON VEUT C4EST A NOUS DE LA FAIRE
       // si l'email est strictement egal a une chaine de caractère vide
       // res est la reponse que l'on va renvoyer au front
@@ -49,10 +82,12 @@ module.exports = (app, db) => {
     // VERIFICATION = si l'utilisateur existe dans la bdd avec un email correspondant
     // on utilise la fonction .getOneUserByEmail(email) on passe en argument l'email de l'utilisateur et la fonction du Model va chercher l'email via la requerte sql dela query
     let user = await userModel.getOneUserByEmail(email);
-
-    //si user.code existe on revoit une response 500
+    //si user.code existe on renvoit une response 500 au front
     if (user.code) {
+      // cas 1: si il existe eton fait un message d'erreur au front
       res.json({ status: 500, msg: "Erreur vérification email.", err: user });
+    } else {
+      //cas 2 :  SI IL N'EXISTE PAS DANS BDD = L'utilisateur a rentrée un mail mais il s'est trompé
     }
   });
 

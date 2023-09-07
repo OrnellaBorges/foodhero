@@ -27,7 +27,7 @@ class UserModel {
     console.log("password", password);
 
     // verifier si le mail est utiliser ou pas on fait une requete sql qui cherche dans tous lers users
-    const user = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    const user = await db.query("SELECT * FROM user WHERE email = ?", [email]);
     //console.log('user', user)
 
     // si il y a un utilisateur avec le mail fourni en req alors

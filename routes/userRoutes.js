@@ -1,6 +1,7 @@
 // CREATION DES ROUTES QUI PERMETTENT DE RECEPTIONNER LES REQUETES (marchandises qui arrive sur les rail)
 
 module.exports = (app, db) => {
+  // sert a exporter le fichier
   const userModel = require("../models/userModel")(db);
 
   //ROUTE TEST
@@ -19,8 +20,10 @@ module.exports = (app, db) => {
     console.log("check", check);
     //ici on fait if / else une condition si ???
     if (check.code) {
-      // check doit retourner un tableau vide pour signifier que la place est libre pour cette utilisateur personne n'utilise le meme email
-
+      // si il une err dans la requete sql il va stocker un objet d'erreur dans la variable check
+      console.log("check2", check);
+      // check doit retourner un tableau vide pour signifier que la place est libre pour cette utilisateur et personne n'utilise le meme email
+      //console.log("check2", check);
       res.json({ status: 500, msg: "Erreur vérification email", err: check });
     } else {
       // si check voit qu'il y a qq1 avec le meme mail il retourne un tableau qui n'est pas vide et en front le res.json
@@ -28,15 +31,16 @@ module.exports = (app, db) => {
       if (check.length > 0) {
         // si le tableau est supérieur a 0
         if (check[0].email === email) {
+          // CE IF NA PAS LIEU DETRE !!!!
           // et que check.email correspondent alors on envoit le msg au front "Email déjà utilisé."
           res.json({ status: 401, msg: "Email déjà utilisé." });
         }
       } else {
-        // dans le cas ou c'est === à 0 c'est que la place est libre
+        // dans le cas ou c'est inférieur à 0 c'est que la place est libre
         // on stock dans let user la reponse de la fonction de sauvegarde d'un utilisateur saveOneUser(req) on lui passe la req du front en argument
         let user = await userModel.saveOneUser(req);
         if (user.code) {
-          // ????
+          // ???? ERROR DANS LA REQUETE MAIS IL NE RENTRE JAMAIS MDR POURQUOI
           res.json({ status: 500, msg: "Il y a eu un problème", err: user });
         } else {
           // QUAND TOUT EST OK
@@ -56,10 +60,9 @@ module.exports = (app, db) => {
   }); */
 
   //UPDATE = modifier un compte
-  app.put("/api/v1/user/updateAccount", async (req, res, next) => {});
+  app.put("/api/v1/user/update", async (req, res, next) => {});
 
   //LOGGIN = connexion de l'utilisateur à son compte
-
   // CREATION DU TOKEN DANS cette route
   app.post("/api/v1/user/loggin", async (req, res, next) => {
     //version ES6
@@ -90,6 +93,8 @@ module.exports = (app, db) => {
       //cas 2 :  SI IL N'EXISTE PAS DANS BDD = L'utilisateur a rentrée un mail mais il s'est trompé
     }
   });
+
+  // LOGOUT = route qui permet a l'utilisateur de se déconnecter
 
   //DELETE = supprimer le compte d'un compte
   app.post("/api/v1/user/deleteAccount", async (req, res, next) => {});

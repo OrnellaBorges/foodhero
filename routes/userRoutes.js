@@ -60,7 +60,31 @@ module.exports = (app, db) => {
   }); */
 
   //UPDATE = modifier un compte
-  app.put("/api/v1/user/update", async (req, res, next) => {});
+  app.put("/api/v1/user/update", async (req, res, next) => {
+    //on stock dans une constante le resultat de la requete updateOneUser qui se trouve dans la class userModel
+    // on doit lui passer en argument le req du front et l'id
+    let user = await userModel.updateOneUser(req, req.params.id);
+
+    //VERIFICATION si la requete sql à echoué avec une condition avec le .code qui est un objet d'erreur
+    if (user.code) {
+      //on revoi une reponse au front qu'on convertir en json
+      res.json({
+        status: 500,
+        msg: "Gros problème dans la requete sql tu dois vérifier la syntaxe de la requete dans userModel",
+        err: user,
+      });
+
+      // PROFIL MODIFIE => renvoyer info mis a jour au front => redux peut mettre a jour automatiquement les info de l'utilisateur connecté
+
+      //stocker dans newUser les donnée que donne getOneUser
+      let newUser = await userModel.getOneUser(req.params.id);
+      if (user.code) {
+        res.json({ status: 500, msg: "pb dans la requete sql", err: newUser });
+      } else {
+        res.json({ status: 500, result: user, newUser: newUser[0] });
+      }
+    }
+  });
 
   //LOGGIN = connexion de l'utilisateur à son compte
   // CREATION DU TOKEN DANS cette route

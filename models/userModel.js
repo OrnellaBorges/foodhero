@@ -95,6 +95,7 @@ class UserModel {
 
   // MODIFIER UTILISATEUR : en paramettre de la fonction on a besoin de la requete du front et de id de l'utilisateur et la require (requete)
   static updateOneUser(req, userId) {
+    const { firstName, lastName, address, zip, city, phone, userId } = req.body;
     return (
       db
         .query(
@@ -117,6 +118,14 @@ class UserModel {
 
   //??????
   static updateConnexion(id) {
-    //que fait cette partie ?
+    const { id } = req.params;
+    return db
+      .query("UPDATE users SET connexionTimestamp = NOW() WHERE id = ?", [id])
+      .then((res) => {
+        return res;
+      })
+      .catch((err) => {
+        return err;
+      });
   }
 }

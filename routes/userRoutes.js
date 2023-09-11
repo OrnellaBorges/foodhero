@@ -121,5 +121,5 @@ module.exports = (app, db) => {
   // LOGOUT = route qui permet a l'utilisateur de se déconnecter
 
   //DELETE = supprimer le compte d'un compte
-  app.post("/api/v1/user/deleteAccount", async (req, res, next) => {});
+  app.post("/api/v1/user/delete", async (req, res, next) => {});
 };

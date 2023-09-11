@@ -128,4 +128,8 @@ class UserModel {
         return err;
       });
   }
+
+  static deleteOneUser(req, id) {
+    return db.query("DELETE users FROM ... ");
+  }
 }

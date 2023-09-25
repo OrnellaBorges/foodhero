@@ -1,22 +1,22 @@
 module.exports = (_db) => {
-  db = _db;
-  return BeerModel;
+    db = _db;
+    return BeerModel;
 };
 
 class AdModel {
-  //récupération des annonces
+    //récupération des annonces
 
-  static getAllAds() {}
+    static getAllAds() {}
 
-  // recup d'une seule annonce par son id
-  static getOneAd(id) {}
+    // recup d'une seule annonce par son id
+    static getOneAd(id) {}
 
-  // sauvegarde d'une annonce
-  static saveOneAd(id) {}
+    // sauvegarde d'une annonce
+    static saveOneAd(id) {}
 
-  // modification d'une annonce
-  static updateOneAd(req, id) {}
+    // modification d'une annonce
+    static updateOneAd(req, id) {}
 
-  // supprimer une annonce
-  static deleteOnead() {}
+    // supprimer une annonce
+    static deleteOneAd() {}
 }

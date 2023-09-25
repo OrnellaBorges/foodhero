@@ -9,13 +9,26 @@
 // c'est un pass temporaire afin d'economiser le nombre de requete au server
 
 const withAuth = require("../withAuth");
-const jwt = require("jsonwebtoken");
-const secret = "popo";
 
 module.export = (app, db) => {
-  const userModel = require("../models/userModel")(db);
+    const userModel = require("../models/userModel")(db);
 
-  // route de recup des infos de l'user par son token (permet la reconxion automatique du front)
-  // de que le front demande la reconnexion via la requette l'api verifie le token et si il
-  // correspond bien il va retourner les datas au front
+    // route de recup des infos de l'user par son token (permet la reconxion automatique du front)
+    // de que le front demande la reconnexion via la requette l'api verifie le token et si il
+    // correspond bien il va retourner les datas au front
+
+    //ROUTE PERMETTANT LA GESTION DE LA CONNEXION
+    app.get("/api/v1/user/checkToken", withAuth, async (req, res, next) => {
+        // ons stock dans user la static function qui permet de recup l'user par son id qu'on passe en argument de la fonction
+        let user = await userModel.getOneUser(req.id);
+
+        // une condition qui permet de verif si il n'y a pas d'erreur dans le requete sql
+        if (user.code) {
+            // on renvpoit une reponse au front on construit un objet
+            res.json({ status: 500, error: user });
+        }
+        // sinon on renvoit une autre reponse si tout est ok
+
+        res.json({ status: 200, user: user[0] });
+    });
 };

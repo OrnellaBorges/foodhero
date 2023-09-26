@@ -3,6 +3,8 @@
 // on a besoin d'importer le token
 const jwt = require("jsonwebtoken");
 
+const config = require("./config.js");
+
 // on stocke le secret dans une variable
 const secret = config.token.secret;
 console.log(secret);

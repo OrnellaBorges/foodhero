@@ -23,16 +23,15 @@ class AdModel {
 
     // sauvegarde d'une annonce
     static saveOneAd(id) {
+        //ici on fait une destructuration ce qui permet de racourcir et d'eviter req.body.xxx
+        const { id, title, description, price } = req.body;
+
+        // CHANGER CREATIONDATE PAR CREATIONTIMESTAMP
+
         return db
             .query(
-                "INSERT INTO ads (id, title, price, photo, quantity, creationTimestamp) VALUES (?, ?, ?, ?, ?, NOW())",
-                [
-                    req.body.name,
-                    req.body.description,
-                    req.body.price,
-                    req.body.photo,
-                    req.body.quantity,
-                ]
+                "INSERT INTO ads (id, title, description, price, creationDate) VALUES (?, ?, ?, ?, NOW())",
+                [id, title, description, price] // pourquoi ya que id en bleu foncé ?
             )
             .then((res) => {
                 return res;
@@ -44,17 +43,12 @@ class AdModel {
 
     // modification d'une annonce
     static updateOneAd(req, id) {
+        const { title, description, price } = req.body;
+
         return db
             .query(
-                "UPDATE beers SET name=? , description=?, price=?, photo=?, quantity=? WHERE id=?",
-                [
-                    req.body.name,
-                    req.body.description,
-                    req.body.price,
-                    req.body.photo,
-                    req.body.quantity,
-                    id,
-                ]
+                "UPDATE ads SET title=? , description=?, price=?, photo=? WHERE id=?",
+                [id, title, description, price]
             )
             .then((res) => {
                 return res;
@@ -68,8 +62,8 @@ class AdModel {
     static deleteOneAd(id) {
         return db
             .query("DELETE FROM ads WHERE id=?", [id])
-            .then((response) => {
-                return response;
+            .then((res) => {
+                return res;
             })
             .catch((err) => {
                 return err;

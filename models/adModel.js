@@ -47,7 +47,7 @@ class AdModel {
 
         return db
             .query(
-                "UPDATE ads SET title=? , description=?, price=?, photo=? WHERE id=?",
+                "UPDATE ads SET title=? , description=?, price=?, picture=? WHERE id=?",
                 [id, title, description, price]
             )
             .then((res) => {

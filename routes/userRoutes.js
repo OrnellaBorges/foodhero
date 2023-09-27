@@ -1,8 +1,10 @@
 // CREATION DES ROUTES QUI PERMETTENT DE RECEPTIONNER LES REQUETES (marchandises qui arrive sur les rail)
 
+const withAuth = require("../withAuth");
+
 module.exports = (app, db) => {
     // sert a exporter le fichier
-    const userModel = require("../models/userModel")(db);
+    const UserModel = require("../models/userModel")(db);
 
     //ROUTE TEST
     app.get("/api/v1/user/test", async (req, res, next) => {
@@ -12,11 +14,11 @@ module.exports = (app, db) => {
 
     //CREATE = creation d'un compte utilisateur
     //Route de creation d'un utilisateur
-    app.post("/api/v1/user/create", async (req, res, next) => {
+    app.post("/api/v1/user/create", withAuth, async (req, res, next) => {
         const { email } = req.body;
         // 1- on verifie si l'utilisateur existe déjà ou pas si il existe on le refoule.
         // on stock dans une constante let check le resultat de la fonction getOneUserByEmail qui recup un utilisateur par son email
-        const check = await userModel.getOneUserByEmail(email); // ici on stock dans la constante toute les données reçu de la fonction getOneUserByEmail qui fait une requete a la bdd dans le userModel
+        const check = await UserModel.getOneUserByEmail(email); // ici on stock dans la constante toute les données reçu de la fonction getOneUserByEmail qui fait une requete a la bdd dans le UserModel
         console.log("check", check);
         //ici on fait if / else une condition si ???
         if (check.code) {
@@ -42,7 +44,7 @@ module.exports = (app, db) => {
             } else {
                 // dans le cas ou c'est inférieur à 0 c'est que la place est libre
                 // on stock dans let user la reponse de la fonction de sauvegarde d'un utilisateur saveOneUser(req) on lui passe la req du front en argument
-                let user = await userModel.saveOneUser(req);
+                let user = await UserModel.saveOneUser(req);
                 if (user.code) {
                     // ???? ERROR DANS LA REQUETE MAIS IL NE RENTRE JAMAIS MDR POURQUOI
                     res.json({
@@ -63,7 +65,7 @@ module.exports = (app, db) => {
 
     /* // ENREGISTREMENT NOUVEL UTILISATEUR SI IL EXISTE PAS
     // ici on stock dans la constante une le resultat de la requete sql qui se trouve dans le model saveUser
-    const result = await userModel.saveOneUser(req);
+    const result = await UserModel.saveOneUser(req);
     console.log("result saveOneUser", result);
 
     // reponse pour le front qu'on convertit en json le result
@@ -71,33 +73,35 @@ module.exports = (app, db) => {
   }); */
 
     //UPDATE = modifier un compte
-    app.put("/api/v1/user/update", async (req, res, next) => {
-        //on stock dans une constante le resultat de la requete updateOneUser qui se trouve dans la class userModel
+    app.put("/api/v1/user/update/:id", async (req, res, next) => {
+        //on stock dans une constante le resultat de la requete updateOneUser qui se trouve dans la class UserModel
         // on doit lui passer en argument le req du front et l'id
-        let user = await userModel.updateOneUser(req, req.params.id);
+        const { id } = req.params;
+
+        let user = await UserModel.updateOneUser(req, id);
 
         //VERIFICATION si la requete sql à echoué avec une condition avec le .code qui est un objet d'erreur
         if (user.code) {
             //on revoi une reponse au front qu'on convertir en json
             res.json({
                 status: 500,
-                msg: "Gros problème dans la requete sql tu dois vérifier la syntaxe de la requete dans userModel",
+                msg: "Gros problème dans la requete sql tu dois vérifier la syntaxe de la requete dans UserModel",
                 err: user,
             });
+        }
 
-            // PROFIL MODIFIE => renvoyer info mis a jour au front => redux peut mettre a jour automatiquement les info de l'utilisateur connecté
+        // PROFIL MODIFIE => renvoyer info mis a jour au front => redux peut mettre a jour automatiquement les info de l'utilisateur connecté
 
-            //stocker dans newUser les donnée que donne getOneUser
-            let newUser = await userModel.getOneUser(req.params.id);
-            if (user.code) {
-                res.json({
-                    status: 500,
-                    msg: "pb dans la requete sql",
-                    err: newUser,
-                });
-            } else {
-                res.json({ status: 500, result: user, newUser: newUser[0] });
-            }
+        //stocker dans newUser les donnée que donne getOneUser
+        let newUser = await UserModel.getOneUser(id);
+        if (user.code) {
+            res.json({
+                status: 500,
+                msg: "pb dans la requete sql",
+                err: newUser,
+            });
+        } else {
+            res.json({ status: 500, result: user, newUser: newUser[0] });
         }
     });
 
@@ -123,7 +127,7 @@ module.exports = (app, db) => {
         }
         // VERIFICATION = si l'utilisateur existe dans la bdd avec un email correspondant
         // on utilise la fonction .getOneUserByEmail(email) on passe en argument l'email de l'utilisateur et la fonction du Model va chercher l'email via la requerte sql dela query
-        let user = await userModel.getOneUserByEmail(email);
+        let user = await UserModel.getOneUserByEmail(email);
         //si user.code existe on renvoit une response 500 au front
         if (user.code) {
             // cas 1: si il existe et on fait un message d'erreur au front
@@ -173,18 +177,18 @@ module.exports = (app, db) => {
     // LOGOUT = route qui permet a l'utilisateur de se déconnecter
 
     //DELETE = supprimer le compte d'un compte
-    app.delete("/api/v1/user/delete/:id", async (req, res, next) => {
+    app.delete("/api/v1/user/delete/:id", withAuth, async (req, res, next) => {
         const { id } = req.params;
         //
 
-        let reponse = await userModel.deleteOneUser(id);
+        let reponse = await UserModel.deleteOneUser(id);
         console.log("reponse.affectedRows", reponse.affectedRows); //=> on reçoit 1 ou 0 dans le terminnal apres avoir fait une requete via postman
         console.log("reponse.code", reponse.code);
-        const deleteSuccess = reponse.affectedRows;
+        const deleteSuccess = reponse.affectedRows; //
         if (deleteSuccess) {
             res.json({ status: 200, msg: "Votre compte à bien été supprimé." });
         } else {
-            res.json({ status: 400, msg: "il y a un soucis !" });
+            res.json({ status: 500, msg: "il y a un soucis !" });
         }
         /* // si la requete sql est mal ecrite
         if (user.code) {
@@ -201,11 +205,11 @@ module.exports = (app, db) => {
 
     /* app.post('api/v1/updateConnexion/:id'), async (req, res, next) => {
     const { id } = req.params
-    await userModel.updateConnexion(req)
+    await UserModel.updateConnexion(req)
   }
 
   app.post('api/v1/updateConnexion'), async (req, res, next) => {
     const { age, name, sexe, ville } = req.body.objet
-    await userModel.updateConnexion(req)
+    await UserModel.updateConnexion(req)
   } */
 };

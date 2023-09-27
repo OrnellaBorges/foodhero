@@ -19,12 +19,7 @@ class UserModel {
     const email = req.body.email */
 
         // ici on fait un racourci on destructure et on affecte req.body
-        const { firstName, lastName, password, email } = req.body;
-
-        console.log("lastName", lastName);
-        console.log("email", email);
-        console.log("firstName", firstName);
-        console.log("password", password);
+        const { password, email } = req.body;
 
         // verifier si le mail est utiliser ou pas on fait une requete sql qui cherche dans tous lers users
         const user = await db.query("SELECT * FROM user WHERE email = ?", [
@@ -45,8 +40,8 @@ class UserModel {
                 db
                     //.query() est une methode qui permet de faire la requete sql entre les parenthèses
                     .query(
-                        "INSERT INTO users (firstName, lastName, email, cryptedPassword, accountCreationDate) VALUES(?, ?, ?, ?, NOW())",
-                        [firstName, lastName, email, cryptedPassword]
+                        "INSERT INTO users (email, cryptedPassword, accountCreationDate) VALUES(?, ?, ?, ?, NOW())",
+                        [email, cryptedPassword]
                     )
                     //en cas de succès il retourne les données
                     .then((result) => {
@@ -97,12 +92,25 @@ class UserModel {
 
     // MODIFIER UTILISATEUR : en paramettre de la fonction on a besoin de la requete du front et de id de l'utilisateur et la require (requete)
     static updateOneUser(req, id) {
-        const { firstName, lastName, address, zip, city, phone } = req.body;
+        console.log("est quon rentre ici");
+
+        console.log("req.body", req.body);
+        console.log("id", id);
+
+        let { firstName, lastName, address, zip, city, phoneNumber } = req.body;
+
+        /* if(firstName === undefined) firstName = ''
+        if(lastName === undefined) firstName = ''
+        if(addressName === undefined) firstName = ''
+        if(zip === undefined) firstName = ''
+        if(city === undefined) firstName = ''
+        if(phone === undefined) firstName = '' */
+
         return (
             db
                 .query(
-                    "UPDATE users SET firstname = ?, lastName = ?, address = ?, zip = ?, city = ?, phone = ? WHERE id = ?",
-                    [firstName, lastName, address, zip, city, phone, id]
+                    "UPDATE users SET firstName = ?, lastName = ?, address = ?, zip = ?, city = ?, phoneNumber = ? WHERE id = ?",
+                    [firstName, lastName, address, zip, city, phoneNumber, id]
                 )
 
                 .then((response) => {

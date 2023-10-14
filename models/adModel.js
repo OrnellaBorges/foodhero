@@ -4,6 +4,24 @@ module.exports = (_db) => {
 };
 
 class AdModel {
+    // sauvegarde/ creation d'une annonce quand l'user veut creer une annonce via un formulaire
+    static createOneAd(req) {
+        // req.body contient tous les champs du formulaire
+        //ici on fait une destructuration ce qui permet de racourcir et d'eviter req.body.xxx
+        const { userId, title, description, price } = req.body;
+        return db
+            .query(
+                "INSERT INTO ads (title, description, creationDate, userId, price) VALUES (?, ?, NOW(), ?, ?)",
+                [title, description, userId, price]
+            )
+            .then((res) => {
+                return res;
+            })
+            .catch((err) => {
+                return err;
+            });
+    }
+
     //récupération de toutes les annonces
     static getAllAds() {
         return db
@@ -28,28 +46,9 @@ class AdModel {
             });
     }
 
-    // sauvegarde/ creation d'une annonce quand l'user veut creer une annonce via un formulaire
-    static createOneAd(req) {
-        // req.body contient tous les champs du formulaire
-        //ici on fait une destructuration ce qui permet de racourcir et d'eviter req.body.xxx
-        const { userId, title, description, price } = req.body;
-
-        return db
-            .query(
-                "INSERT INTO ads (userId, title, description, price, creationDate) VALUES (?, ?, ?, ?, NOW())",
-                [userId, title, description, price] // pourquoi ya que id en bleu foncé ?
-            )
-            .then((res) => {
-                return res;
-            })
-            .catch((err) => {
-                return err;
-            });
-    }
-
     // modification d'une annonce
-    static updateOneAd(req) {
-        const { id, title, description, price } = req.body;
+    static updateOneAd(req, id) {
+        const { title, description, price } = req.body;
 
         return db
             .query(

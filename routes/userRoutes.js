@@ -58,7 +58,7 @@ module.exports = (app, db) => {
     });
 
     //UPDATE = modifier un compte
-    app.put("/api/v1/user/update/:id", async (req, res, next) => {
+    app.put("/api/v1/user/update/:id", withAuth, async (req, res, next) => {
         //on stock dans une constante le resultat de la requete updateOneUser qui se trouve dans la class UserModel
         // on doit lui passer en argument le req du front et l'id
         const { id } = req.params;
@@ -163,7 +163,7 @@ module.exports = (app, db) => {
     // LOGOUT = route qui permet a l'utilisateur de se déconnecter
 
     //DELETE = supprimer le compte d'un compte
-    app.delete("/api/v1/user/delete/:id", async (req, res, next) => {
+    app.delete("/api/v1/user/delete/:id", withAuth, async (req, res, next) => {
         const { id } = req.params;
         const userFound = await UserModel.getOneUserById(id);
         if (userFound.code) {

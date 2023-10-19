@@ -45,6 +45,9 @@ module.exports = (app, db) => {
         res.json({ status: 200, oneAd: oneAd });
     });
 
+    //ROUTE d'ajout d'une image dans l'api (stock une image et retourne au front le nom de l'image stocké)
+    //app.post("/api/v1/ads/pict", adminAuth, (req, res, next) => {});
+
     // route permettant de recuperer toutes les annonces de l'utilisateur par son id lorsqu'il va dans son dashbord pour consulter toutes ces annonces
     // il faut creer une table qui stock les annonces de l'utilisateur en fonction de son id et doivent etre lié par l'userID
     app.get("/api/v1/ads/getAllUserAd/:userId", async (req, res, next) => {

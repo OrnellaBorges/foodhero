@@ -118,10 +118,14 @@ module.exports = (app, db) => {
             // VERIFICATION = si l'utilisateur existe dans la bdd avec un email correspondant
             // on utilise la fonction .getOneUserByEmail(email) on passe en argument l'email de l'utilisateur et la fonction du Model va chercher l'email via la requerte sql dela query
             //si user.code existe on renvoit une response 500 au front
-            const user = await UserModel.getOneUserByEmail(email);
+            const user = await UserModel.getOneUserByEmail(email); // on verif si un email existe ou pas
             if (user.code) {
                 // cas 1: si il existe et on fait un message d'erreur au front
-                res.json({ status: 500, error: user.code });
+                res.json({
+                    status: 500,
+                    msg: "la requete sql n'a pas fonctionné",
+                    error: user.code,
+                });
             } else {
                 if (user.length === 0) {
                     //cas 2 :  SI IL N'EXISTE PAS DANS BDD = L'utilisateur a rentrée un mail mais il s'est trompé
@@ -131,6 +135,7 @@ module.exports = (app, db) => {
                         msg: "Pas d'utilisateur correspondant à ce mail.",
                     });
                 } else {
+                    // sinon si il existe
                     //on compare les password avec bcrypt
                     const same = await bcrypt.compare(
                         password,
@@ -152,7 +157,7 @@ module.exports = (app, db) => {
                         //on retourne un json d'erreur
                         res.json({
                             status: 401,
-                            error: "Votre mot de passe est incorrect",
+                            msg: "Votre mot de passe est incorrect",
                         });
                     }
                 }
@@ -165,16 +170,21 @@ module.exports = (app, db) => {
     // route permettant de recuperer les infos d'un user lorsqu'il veut contacter un utilisateur et commander un plat
     app.get("/api/v1/user/getOneUser/:id", async (req, res, next) => {
         const { id } = req.params;
-        const oneUser = await AdModel.getOneUserById(id);
-        console.log("oneUser", oneAd);
-
+        const oneUser = await UserModel.getOneUserById(id);
+        console.log("oneUser", oneUser);
         if (oneUser.code) {
             res.json({
                 status: 500,
                 msg: "pas reussi a recup les l'utilisateur",
+                err: oneUser.code,
+            });
+        } else {
+            res.json({
+                status: 200,
+                oneUser: oneUser,
+                msg: "user bien récupéré",
             });
         }
-        res.json({ status: 200, oneUser: oneUser });
     });
 
     //DELETE = supprimer le compte d'un compte

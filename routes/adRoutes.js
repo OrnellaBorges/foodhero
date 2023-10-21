@@ -38,6 +38,8 @@ module.exports = (app, db) => {
         const { id } = req.params;
         const oneAd = await AdModel.getOneAd(id);
 
+        console.log("oneAd", oneAd);
+
         if (oneAd.code) {
             res.json({ status: 500, msg: "pas reussi a recup les annonces" });
         }

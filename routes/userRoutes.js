@@ -162,6 +162,21 @@ module.exports = (app, db) => {
 
     // LOGOUT = route qui permet a l'utilisateur de se déconnecter
 
+    // route permettant de recuperer les infos d'un user lorsqu'il veut contacter un utilisateur et commander un plat
+    app.get("/api/v1/user/getOneUser/:id", async (req, res, next) => {
+        const { id } = req.params;
+        const oneUser = await AdModel.getOneUserById(id);
+        console.log("oneUser", oneAd);
+
+        if (oneUser.code) {
+            res.json({
+                status: 500,
+                msg: "pas reussi a recup les l'utilisateur",
+            });
+        }
+        res.json({ status: 200, oneUser: oneUser });
+    });
+
     //DELETE = supprimer le compte d'un compte
     app.delete("/api/v1/user/delete/:id", withAuth, async (req, res, next) => {
         const { id } = req.params;

@@ -64,7 +64,7 @@ class UserModel {
             });
     }
 
-    //ici on recup un utilisateur par son id donc on a besoin de lui passer en argument "id" car il a besoin de cet data qui vien du front
+    //ici on recup un utilisateur par son id donc on a besoin de lui passer en argument "id" car il a besoin de cet data qui vient du front
     static getOneUserById(id) {
         return db
             .query("SELECT * FROM users WHERE id = ?", [id])

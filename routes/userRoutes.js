@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 
 module.exports = (app, db) => {
     // sert a exporter le fichier
-    const UserModel = require("../models/userModel")(db);
+    const UserModel = require("../models/UserModel")(db);
 
     //CREATE = creation d'un compte utilisateur
     //Route de creation d'un utilisateur
@@ -63,6 +63,7 @@ module.exports = (app, db) => {
         // on doit lui passer en argument le req du front et l'id
         const { id } = req.params;
         const userFound = await UserModel.getOneUserById(id);
+
         //VERIFICATION si la requete sql à echoué avec une condition avec le .code qui est un objet d'erreur
         if (userFound.code) {
             res.json({
@@ -80,10 +81,20 @@ module.exports = (app, db) => {
                         err: userUpdated.code,
                     });
                 } else {
-                    res.json({
-                        status: 200,
-                        result: "utilisateur bien modifié",
-                    });
+                    const userUpdated = await UserModel.getOneUserById(id);
+                    if (userUpdated.code) {
+                        res.json({
+                            status: 500,
+                            msg: "pas reussi a recup les l'utilisateur",
+                            err: userUpdated.code,
+                        });
+                    } else {
+                        res.json({
+                            status: 200,
+                            userUpdated: userUpdated[0],
+                            msg: "user bien updaté",
+                        });
+                    }
                 }
             } else {
                 res.json({
@@ -150,7 +161,7 @@ module.exports = (app, db) => {
                         res.json({
                             status: 200,
                             token: token,
-                            user: user[0],
+                            user_id: user[0].id,
                             msg: "Connecté",
                         });
                     } else {
@@ -171,7 +182,6 @@ module.exports = (app, db) => {
     app.get("/api/v1/user/getOneUser/:id", async (req, res, next) => {
         const { id } = req.params;
         const oneUser = await UserModel.getOneUserById(id);
-        console.log("oneUser", oneUser);
         if (oneUser.code) {
             res.json({
                 status: 500,

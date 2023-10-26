@@ -81,34 +81,13 @@ class UserModel {
 
     // MODIFIER UTILISATEUR : en paramettre de la fonction on a besoin de la requete du front et de id de l'utilisateur et la require (requete)
     static async updateOneUser(req, id) {
-        const {
-            firstName,
-            lastName,
-            email,
-            password,
-            phoneNumber,
-            pseudo,
-            address,
-            city,
-            zip,
-        } = req.body;
+        const { firstName, lastName, email, password } = req.body;
         const cryptedPassword = await bcrypt.hash(password, saltRounds);
         return (
             db
                 .query(
-                    "UPDATE users SET firstName = ?, lastName = ?, email = ?, cryptedPassword = ?, phoneNumber = ?, pseudo = ?, address = ?, city = ?, zip = ? WHERE id = ?",
-                    [
-                        firstName,
-                        lastName,
-                        email,
-                        cryptedPassword,
-                        phoneNumber,
-                        pseudo,
-                        address,
-                        city,
-                        zip,
-                        id,
-                    ]
+                    "UPDATE users SET firstName = ?, lastName = ?, email = ?, cryptedPassword = ? WHERE id = ?",
+                    [firstName, lastName, email, cryptedPassword, id]
                 )
                 .then((response) => {
                     // on passe en argument la response de la requete

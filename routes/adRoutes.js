@@ -30,15 +30,13 @@ module.exports = (app, db) => {
             res.json({ status: 500, msg: "pas reussi a recup les annonces" });
         }
 
-        res.json({ status: 200, allAds: allAds });
+        res.json({ status: 200, result: allAds });
     });
 
     // route permettant de recuperer une annonce lorsque que l'user ou visiteur clique sur une annonce pour la consulter
     app.get("/api/v1/ads/getOneAd/:id", async (req, res, next) => {
         const { id } = req.params;
         const oneAd = await AdModel.getOneAd(id);
-
-        console.log("oneAd", oneAd);
 
         if (oneAd.code) {
             res.json({ status: 500, msg: "pas reussi a recup les annonces" });

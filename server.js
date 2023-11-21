@@ -13,6 +13,7 @@ const mysql = require("promise-mysql");
 
 //CREATION _ IMPORTATION  DES ROUTES QU ON STOCK DANS DES CONSTANTES
 const userRoutes = require("./routes/userRoutes");
+const authRoutes = require("./routes/authRoutes");
 const adRoutes = require("./routes/adRoutes");
 
 // STOCKAGE DES INFO CHEMINS DE CONFIG DE BDD DANS CONTANTES
@@ -24,31 +25,32 @@ const port = process.env.PORT || config.db.port;
 
 //CONNEXION A MA BDD
 mysql
-  .createConnection({
-    host: host,
-    database: database,
-    user: user,
-    password: password,
-    port: port,
-  })
-  .then((db) => {
-    console.log("connecté bdd");
+    .createConnection({
+        host: host,
+        database: database,
+        user: user,
+        password: password,
+        port: port,
+    })
+    .then((db) => {
+        console.log("connecté bdd");
 
-    app.get("/", (req, res, next) => {
-      res.json({ msg: "Welcome to Food Hero api bro!", status: 200 });
-    });
+        app.get("/", (req, res, next) => {
+            res.json({ msg: "Welcome to Food Hero api bro!", status: 200 });
+        });
 
-    //APPEL de nos routes
-    userRoutes(app, db);
-    adRoutes(app, db);
-  })
-  // en cas d'erreur
-  .catch((err) => console.log(err));
+        //APPEL de nos routes
+        userRoutes(app, db);
+        authRoutes(app, db);
+        adRoutes(app, db);
+    })
+    // en cas d'erreur
+    .catch((err) => console.error(err));
 
 // on stock le chemin du port dans une constantes
 const PORT = process.env.PORT || 9600;
 
 // ici
 app.listen(PORT, () => {
-  console.log("listening port: " + PORT + " bro!");
+    console.log("listening port: " + PORT + " bro!");
 });
